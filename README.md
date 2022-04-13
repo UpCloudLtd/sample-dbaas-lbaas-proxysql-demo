@@ -64,9 +64,9 @@ After running benchmarks you should log in to sql-proxy-server with SSH and chec
 
 Log in by running `ssh root@<one of proxy_ip_addresses>`
 
-You can use `bash show-servers.sh` to view DBaaS servers and server groups in SQLProxy.
+You can use `bash show-servers.sh` to view DBaaS servers and server groups in ProxySQL.
 
-You can use `bash show-rules.sh` to view SQL splitting rules in SQLProxy.
+You can use `bash show-rules.sh` to view SQL splitting rules in ProxySQL.
 
 You can use `bash show-query-digest.sh` to view how different queries have been allocated to different server groups.
 
