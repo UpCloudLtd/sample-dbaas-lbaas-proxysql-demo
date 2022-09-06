@@ -1,7 +1,7 @@
 resource "upcloud_server" "sql-client" {
   hostname   = "sql-client"
   zone       = var.zone
-  plan       = "1xCPU-1GB"
+  plan       = "2xCPU-4GB"
   depends_on = [var.private_sdn_network, var.dbaas_mysql_username]
 
   template {
@@ -39,8 +39,10 @@ resource "upcloud_server" "sql-client" {
     inline = [
       "apt-get update",
       "apt-get -y install sysbench mysql-client-core-8.0",
-      "echo 'sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=$1 --threads=4 --mysql-user=${var.dbaas_mysql_username} --mysql-password=${var.dbaas_mysql_password} --mysql-port=3306 --mysql-db=${var.dbaas_mysql_database} --db-driver=mysql --tables=10 --table-size=100000  prepare' > /root/prepare-benchmark",
-      "echo 'sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=$1 --threads=4 --mysql-user=${var.dbaas_mysql_username} --mysql-password=${var.dbaas_mysql_password} --mysql-port=3306 --mysql-db=${var.dbaas_mysql_database} --db-driver=mysql --tables=10 --table-size=100000 --report-interval=10 --time=60 run' > /root/run-benchmark",
+      "echo 'sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=$1 --threads=4 --mysql-user=${var.dbaas_mysql_username} --mysql-password=${var.dbaas_mysql_password} --mysql-port=3306 --mysql-db=${var.dbaas_mysql_database} --db-driver=mysql --tables=10 --table-size=100000  prepare' > /root/prepare-readwrite-benchmark",
+      "echo 'sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=$1 --threads=40 --mysql-user=${var.dbaas_mysql_username} --mysql-password=${var.dbaas_mysql_password} --mysql-port=3306 --mysql-db=${var.dbaas_mysql_database} --db-driver=mysql --tables=10 --table-size=100000 --report-interval=10 --time=60 run' > /root/run-readwrite-benchmark",
+      "echo 'sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-host=$1 --threads=4 --mysql-user=${var.dbaas_mysql_username} --mysql-password=${var.dbaas_mysql_password} --mysql-port=3306 --mysql-db=${var.dbaas_mysql_database} --db-driver=mysql --tables=10 --table-size=100000  prepare' > /root/prepare-readonly-benchmark",
+      "echo 'sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-host=$1 --threads=40 --mysql-user=${var.dbaas_mysql_username} --mysql-password=${var.dbaas_mysql_password} --mysql-port=3306 --mysql-db=${var.dbaas_mysql_database} --db-driver=mysql --tables=10 --table-size=100000 --report-interval=10 --time=60 run' > /root/run-readonly-benchmark",
       "echo 'while true; do mysql -h $1 -P3306 -u${var.dbaas_mysql_username} -p${var.dbaas_mysql_password} -srNe \"SELECT @@hostname\"; sleep 1; done' > /root/ping-mysql.sh",
       "curl -fsSL https://www.percona.com/get/pmm | /bin/bash"
     ]

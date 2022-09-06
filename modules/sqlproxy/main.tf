@@ -62,17 +62,14 @@ resource "upcloud_server" "sql-proxy-server" {
       "echo 'mysql -u admin -p${var.dbaas_mysql_password} -h 127.0.0.1 -P6032 -e \"select * from mysql_servers;\"' > /root/show-servers.sh",
       "echo 'mysql -u admin -p${var.dbaas_mysql_password} -h 127.0.0.1 -P6032 -e \"select * from mysql_query_rules;\"' > /root/show-rules.sh",
       "echo 'cat /root/proxysql-setup.sql | mysql -uadmin -padmin -h127.0.0.1 -P6032' > /root/finish.sh",
-      "echo 'pmm-admin add proxysql --username=admin --password=${var.dbaas_mysql_password}' > /root/finish.sh",
-      "exit 0"
-    ]
-  }
-  provisioner "remote-exec" {
-    inline = [
       "wget https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb",
       "sudo dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb",
       "sudo apt-get update",
       "sudo apt-get install pmm2-client",
-      "bash /root/finish.sh"
+      "exit 0"
     ]
+  }
+  provisioner "remote-exec" {
+    inline = ["bash /root/finish.sh"]
   }
 }
