@@ -66,6 +66,12 @@ resource "upcloud_server" "sql-proxy-server" {
     ]
   }
   provisioner "remote-exec" {
-    inline = ["bash /root/finish.sh"]
+    inline = [
+      "bash /root/finish.sh",
+      "wget https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb",
+      "sudo dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb",
+      "sudo apt-get update",
+      "sudo apt-get install pmm2-client"
+    ]
   }
 }
