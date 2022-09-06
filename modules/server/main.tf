@@ -12,6 +12,9 @@ resource "upcloud_server" "sql-client" {
     type = "public"
   }
   network_interface {
+    type = "utility"
+  }
+  network_interface {
     type    = "private"
     network = var.private_sdn_network
   }
