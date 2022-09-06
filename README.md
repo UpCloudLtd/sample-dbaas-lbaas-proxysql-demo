@@ -58,9 +58,13 @@ Log in by running `ssh root@<sql_client_ip_address>`
 
 You can ping the DBaaS with `bash ping-mysql.sh <LBaaS hostname>`
 
-You can prepare DBaaS for ReadWrite benchmarking with `bash prepare-readwrite-benchmark <LBaaS hostname>` and you can run the benchmarks with `bash run-readwrite-benchmark <LBaaS hostname>`.
+You can prepare DBaaS for benchmarking with `bash prepare-benchmark <LBaaS/DBaaS hostname> <MySQL port>` 
 
-You can prepare DBaaS for ReadOnly benchmarking with `bash prepare-readonly-benchmark <LBaaS hostname>` and you can run the benchmarks with `bash run-readonly-benchmark <LBaaS hostname>`.
+You can run ReadWrite benchmarking with `bash run-readwrite-benchmark <LBaaS/DBaaS hostname> <MySQL port>`
+
+You can run ReadOnly benchmarking with `bash run-readonly-benchmark <LBaaS/DBaaS hostname> <MySQL port>` 
+
+You can cleanup DBaaS for benchmarking with `bash cleanup-benchmark <LBaaS/DBaaS hostname> <MySQL port>` 
 
 After running benchmarks you should log in to sql-proxy-server with SSH and check how SQL queries are split.
 
