@@ -56,7 +56,7 @@ make print
 ```
 Log in by running `ssh root@<sql_client_ip_address>`
 
-You can ping the DBaaS with `bash ping-mysql.sh <LBaaS hostname>`
+You can ping the DBaaS with `bash ping-mysql.sh <LBaaS hostname> <MySQL port>`
 
 You can prepare DBaaS for benchmarking with `bash prepare-benchmark <LBaaS/DBaaS hostname> <MySQL port>` 
 
