@@ -49,7 +49,3 @@ resource "upcloud_server" "sql-client" {
   }
 }
 
-sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=$1 --threads=4 --mysql-user=testuser --mysql-password=AVNS_hegMfibJcfFkMTHxc78 --mysql-port=$2 --mysql-db=testdb --d
-b-driver=mysql --tables=10 --table-size=100000 --db-ps-mode=disable --skip-trx --point-selects=100 --simple-ranges=1 --sum-ranges=1 --order-ranges=1 --distinct-ranges=1 prepare
-
-
