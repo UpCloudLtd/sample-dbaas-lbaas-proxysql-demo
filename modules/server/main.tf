@@ -43,8 +43,7 @@ resource "upcloud_server" "sql-client" {
       "echo 'sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=$1 --threads=40 --mysql-user=${var.dbaas_mysql_username} --mysql-password=${var.dbaas_mysql_password} --mysql-port=$2 --mysql-db=${var.dbaas_mysql_database} --db-driver=mysql --tables=10 --table-size=100000 --report-interval=10 --time=60 --db-ps-mode=disable --skip-trx --point-selects=100 --simple-ranges=1 --sum-ranges=1 --order-ranges=1 --distinct-ranges=1 --mysql-ignore-errors=1062,1213 run' > /root/run-readwrite-benchmark",
       "echo 'sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-host=$1 --threads=40 --mysql-user=${var.dbaas_mysql_username} --mysql-password=${var.dbaas_mysql_password} --mysql-port=$2 --mysql-db=${var.dbaas_mysql_database} --db-driver=mysql --tables=10 --table-size=100000 --report-interval=10 --time=60 --db-ps-mode=disable --skip-trx --point-selects=100 --simple-ranges=1 --sum-ranges=1 --order-ranges=1 --distinct-ranges=1 run' > /root/run-readonly-benchmark",
       "echo 'sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=$1 --threads=4 --mysql-user=${var.dbaas_mysql_username} --mysql-password=${var.dbaas_mysql_password} --mysql-port=$2 --mysql-db=${var.dbaas_mysql_database} --db-driver=mysql --tables=10 --table-size=100000  cleanup' > /root/cleanup-benchmark",
-      "echo 'while true; do mysql -h $1 -P$2 -u${var.dbaas_mysql_username} -p${var.dbaas_mysql_password} -srNe \"SELECT @@hostname\"; sleep 1; done' > /root/ping-mysql.sh",
-      "curl -fsSL https://www.percona.com/get/pmm | /bin/bash"
+      "echo 'while true; do mysql -h $1 -P$2 -u${var.dbaas_mysql_username} -p${var.dbaas_mysql_password} -srNe \"SELECT @@hostname\"; sleep 1; done' > /root/ping-mysql.sh"
     ]
   }
 }
