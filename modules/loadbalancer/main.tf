@@ -4,18 +4,28 @@ resource "upcloud_loadbalancer" "lb" {
   name              = "SQL-LB"
   plan              = "production-small"
   zone              = var.zone
-  network           = var.private_sdn_network
+  networks {
+    name = "SDN-Network"
+    family = "IPv4"
+    type = "private"
+    network = var.private_sdn_network
+  }
+  networks {
+    name   = "Public-Network"
+    type   = "public"
+    family = "IPv4"
+  }
   depends_on        = [var.proxy_private_ip_addresses]
 }
 
 
 resource "upcloud_loadbalancer_backend" "lb_be" {
-  loadbalancer = resource.upcloud_loadbalancer.lb.id
+  loadbalancer = upcloud_loadbalancer.lb.id
   name         = "proxy-servers"
 }
 
 resource "upcloud_loadbalancer_static_backend_member" "lb_be_member1" {
-  backend      = resource.upcloud_loadbalancer_backend.lb_be.id
+  backend      = upcloud_loadbalancer_backend.lb_be.id
   name         = "proxy0"
   ip           = var.proxy_private_ip_addresses[0]
   port         = 6033
@@ -25,7 +35,7 @@ resource "upcloud_loadbalancer_static_backend_member" "lb_be_member1" {
 }
 
 resource "upcloud_loadbalancer_static_backend_member" "lb_be_member2" {
-  backend      = resource.upcloud_loadbalancer_backend.lb_be.id
+  backend      = upcloud_loadbalancer_backend.lb_be.id
   name         = "proxy1"
   ip           = var.proxy_private_ip_addresses[1]
   port         = 6033
@@ -35,15 +45,18 @@ resource "upcloud_loadbalancer_static_backend_member" "lb_be_member2" {
 }
 
 resource "upcloud_loadbalancer_frontend" "lb_fe" {
-  loadbalancer         = resource.upcloud_loadbalancer.lb.id
+  loadbalancer         = upcloud_loadbalancer.lb.id
   name                 = "SQL-lB"
   mode                 = "tcp"
   port                 = 3306
-  default_backend_name = resource.upcloud_loadbalancer_backend.lb_be.name
+  networks {
+    name = upcloud_loadbalancer.lb.networks[1].name
+  }
+  default_backend_name = upcloud_loadbalancer_backend.lb_be.name
 }
 
 resource "upcloud_loadbalancer_frontend_rule" "lb_fe_rule1" {
-  frontend = resource.upcloud_loadbalancer_frontend.lb_fe.id
+  frontend = upcloud_loadbalancer_frontend.lb_fe.id
   name     = "accept-clients"
   priority = 100
 
@@ -54,13 +67,13 @@ resource "upcloud_loadbalancer_frontend_rule" "lb_fe_rule1" {
   }
   actions {
     use_backend {
-      backend_name = resource.upcloud_loadbalancer_backend.lb_be.name
+      backend_name = upcloud_loadbalancer_backend.lb_be.name
     }
   }
 }
 
 resource "upcloud_loadbalancer_frontend_rule" "lb_fe_rule2" {
-  frontend = resource.upcloud_loadbalancer_frontend.lb_fe.id
+  frontend = upcloud_loadbalancer_frontend.lb_fe.id
   name     = "deny-any"
   priority = 1
 

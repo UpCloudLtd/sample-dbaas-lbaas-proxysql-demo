@@ -69,3 +69,17 @@ resource "upcloud_server" "sql-proxy-server" {
     inline = ["bash /root/finish.sh"]
   }
 }
+
+resource "upcloud_server_group" "proxy-ha-pair" {
+  title         = "proxy_ha_group"
+  anti_affinity = true
+  labels = {
+    "key1" = "proxy-ha"
+
+  }
+  members = [
+    upcloud_server.sql-proxy-server[0].id,
+    upcloud_server.sql-proxy-server[1].id
+  ]
+
+}
