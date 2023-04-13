@@ -14,7 +14,7 @@ module "sqlproxy" {
   ssh_key_public               = var.ssh_key_public
   zone                         = var.zone
   sqlproxy_plan                = var.sqlproxy_plan
-  private_sdn_network          = module.sdn_network.private_sdn_network
+  private_sdn_network_proxysql = module.sdn_network.private_sdn_network_proxysql
   dbaas_mysql_hosts            = module.dbaas_mysql.dbaas_mysql_hosts
   dbaas_mysql_port             = module.dbaas_mysql.dbaas_mysql_port
   dbaas_mysql_username         = module.dbaas_mysql.dbaas_mysql_username
@@ -26,19 +26,20 @@ module "sqlproxy" {
 }
 
 module "server" {
-  source               = "./modules/server"
-  ssh_key_public       = var.ssh_key_public
-  zone                 = var.zone
-  private_sdn_network  = module.sdn_network.private_sdn_network
-  dbaas_mysql_database = module.dbaas_mysql.dbaas_mysql_database
-  dbaas_mysql_username = module.dbaas_mysql.dbaas_mysql_username
-  dbaas_mysql_password = module.dbaas_mysql.dbaas_mysql_password
+  source                     = "./modules/server"
+  ssh_key_public             = var.ssh_key_public
+  zone                       = var.zone
+  private_sdn_network_client = module.sdn_network.private_sdn_network_client
+  dbaas_mysql_database       = module.dbaas_mysql.dbaas_mysql_database
+  dbaas_mysql_username       = module.dbaas_mysql.dbaas_mysql_username
+  dbaas_mysql_password       = module.dbaas_mysql.dbaas_mysql_password
 }
 
 module "loadbalancer" {
-  source                     = "./modules/loadbalancer"
-  zone                       = var.zone
-  proxy_private_ip_addresses = module.sqlproxy.proxy_private_ip_addresses
-  private_sdn_network        = module.sdn_network.private_sdn_network
-  sql_client_ip_address      = module.server.sql_client_ip_address
+  source                             = "./modules/loadbalancer"
+  zone                               = var.zone
+  proxy_private_ip_addresses         = module.sqlproxy.proxy_private_ip_addresses
+  private_sdn_network_proxysql       = module.sdn_network.private_sdn_network_proxysql
+  private_sdn_network_client         = module.sdn_network.private_sdn_network_client
+  private_sdn_network_client_address = module.sdn_network.private_sdn_network_client_address
 }

@@ -11,7 +11,7 @@ variable "sqlproxy_sdn_ip" {
   default = ""
 }
 
-variable "private_sdn_network" {
+variable "private_sdn_network_client" {
   type = string
 }
 
