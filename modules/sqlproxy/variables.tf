@@ -10,7 +10,7 @@ variable "sqlproxy_plan" {
   type = string
 }
 
-variable "private_sdn_network" {
+variable "private_sdn_network_proxysql" {
   type = string
 }
 

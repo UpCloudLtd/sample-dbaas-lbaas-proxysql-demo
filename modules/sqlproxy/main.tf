@@ -2,11 +2,12 @@ resource "upcloud_server" "sql-proxy-server" {
   zone       = var.zone
   plan       = var.sqlproxy_plan
   count      = 2
+  metadata   = true
   hostname   = "sql-proxy${count.index}-server"
-  depends_on = [var.private_sdn_network, var.dbaas_mysql_hosts]
+  depends_on = [var.private_sdn_network_proxysql, var.dbaas_mysql_hosts]
 
   template {
-    storage = "Ubuntu Server 20.04 LTS (Focal Fossa)"
+    storage = "Ubuntu Server 22.04 LTS (Jammy Jellyfish)"
     size    = 25
   }
 
@@ -18,7 +19,7 @@ resource "upcloud_server" "sql-proxy-server" {
   }
   network_interface {
     type    = "private"
-    network = var.private_sdn_network
+    network = var.private_sdn_network_proxysql
   }
   login {
     user = "root"
@@ -52,11 +53,12 @@ resource "upcloud_server" "sql-proxy-server" {
 
   provisioner "remote-exec" {
     inline = [
-      "apt-get install -y lsb-release",
-      "wget -O - 'https://repo.proxysql.com/ProxySQL/repo_pub_key' | apt-key add -",
-      "echo deb https://repo.proxysql.com/ProxySQL/proxysql-2.2.x/$(lsb_release -sc)/ ./ | tee /etc/apt/sources.list.d/proxysql.list",
-      "apt-get update",
-      "apt-get -y install proxysql mysql-client",
+      "export DEBIAN_FRONTEND=noninteractive",
+      "apt-get -o 'Dpkg::Options::=--force-confold' -q -y install --no-install-recommends lsb-release wget apt-transport-https ca-certificates gnupg",
+      "wget -O - 'https://repo.proxysql.com/ProxySQL/proxysql-2.5.x/repo_pub_key' | apt-key add -",
+      "echo deb https://repo.proxysql.com/ProxySQL/proxysql-2.5.x/$(lsb_release -sc)/ ./ | tee /etc/apt/sources.list.d/proxysql.list",
+      "apt-get -o 'Dpkg::Options::=--force-confold' -q -y update",
+      "apt-get -o 'Dpkg::Options::=--force-confold' -q -y install proxysql mysql-client-core-8.0",
       "systemctl enable --now proxysql",
       "echo 'mysql -u admin -p${var.dbaas_mysql_password} -h 127.0.0.1 -P6032 -e \"select hostgroup, schemaname, username, digest, digest_text, count_star from stats_mysql_query_digest;\"' > /root/show-query-digest.sh",
       "echo 'mysql -u admin -p${var.dbaas_mysql_password} -h 127.0.0.1 -P6032 -e \"select * from mysql_servers;\"' > /root/show-servers.sh",
