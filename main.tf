@@ -1,13 +1,15 @@
-
-module "dbaas_mysql" {
-  source     = "./modules/dbaas_mysql"
-  dbaas_plan = var.dbaas_plan
-  zone       = var.zone
-}
 module "sdn_network" {
   source = "./modules/sdn_network"
   zone   = var.zone
 }
+
+module "dbaas_mysql" {
+  source                 = "./modules/dbaas_mysql"
+  dbaas_plan             = var.dbaas_plan
+  zone                   = var.zone
+  private_sdn_network_be = module.sdn_network.private_sdn_network_be
+}
+
 
 module "sqlproxy" {
   source                       = "./modules/sqlproxy"
@@ -23,6 +25,7 @@ module "sqlproxy" {
   dbaas_mysql_monitor_password = module.dbaas_mysql.dbaas_mysql_monitor_password
   dbaas_mysql_default_username = module.dbaas_mysql.dbaas_mysql_default_username
   dbaas_mysql_default_password = module.dbaas_mysql.dbaas_mysql_default_password
+  private_sdn_network_be       = module.sdn_network.private_sdn_network_be
 }
 
 module "server" {

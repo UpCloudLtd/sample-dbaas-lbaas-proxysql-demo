@@ -15,11 +15,12 @@ resource "upcloud_server" "sql-proxy-server" {
     type = "public"
   }
   network_interface {
-    type = "utility"
+    type    = "private"
+    network = var.private_sdn_network_proxysql
   }
   network_interface {
     type    = "private"
-    network = var.private_sdn_network_proxysql
+    network = var.private_sdn_network_be
   }
   login {
     user = "root"
@@ -73,8 +74,8 @@ resource "upcloud_server" "sql-proxy-server" {
 }
 
 resource "upcloud_server_group" "proxy-ha-pair" {
-  title         = "proxy_ha_group"
-  anti_affinity = true
+  title                = "proxy_ha_group"
+  anti_affinity_policy = "yes"
   labels = {
     "key1" = "proxy-ha"
 

@@ -16,9 +16,6 @@ resource "upcloud_server" "sql-client" {
     type    = "private"
     network = var.private_sdn_network_client
   }
-  network_interface {
-    type = "utility"
-  }
 
   login {
     user = "root"

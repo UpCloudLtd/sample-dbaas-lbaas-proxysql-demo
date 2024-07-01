@@ -30,3 +30,4 @@ override.tf.json
 vars.sh
 .idea
 .terraform.lock.hcl
+config.tfvars

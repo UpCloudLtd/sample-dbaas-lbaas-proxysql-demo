@@ -13,7 +13,9 @@ variable "sqlproxy_plan" {
 variable "private_sdn_network_proxysql" {
   type = string
 }
-
+variable "private_sdn_network_be" {
+  type = string
+}
 variable "dbaas_mysql_hosts" {
   type = list(any)
 }
